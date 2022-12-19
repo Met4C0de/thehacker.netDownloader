@@ -1,5 +1,6 @@
 import os
-import time
+import requests
+from tqdm import tqdm
 
 def logo():
     clear()
@@ -20,6 +21,20 @@ def createDirectories(pathOrFolder: str):
         color.orange(f"Ya hay una carpeta con este nombre, los datos se guardaran en esta direccion:")
         color.green(f"{pathOrFolder}\n")
 
+def downloadFile(self, fullPathSave:str, link:str, fullLink:str):
+    response = requests.get(fullLink, stream=True)
+    print(color.ORANGE)
+    if response.status_code == 200:
+        total_size_in_bytes= int(response.headers.get('content-length', 0))
+        block_size = 1024 
+        progress_bar = tqdm(total=total_size_in_bytes, ascii=" ▖▘▝▗▚▞█", unit='iB', unit_scale=True)
+
+        with open(f"{fullPathSave}/{link.text}", 'wb') as file:
+            for data in response.iter_content(block_size):
+                progress_bar.update(len(data))
+                file.write(data)
+        progress_bar.close() 
+    return response.status_code
 
 def createPathLog(pathLog: str):
     if pathLog and os.path.isdir(pathLog):
