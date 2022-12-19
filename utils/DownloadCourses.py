@@ -1,29 +1,12 @@
 import os
-import requests
-from bs4 import BeautifulSoup
-import re
-from  utils.soutils import color, downloadFile
+from  utils.soutils import color
+from utils.Download import DownloadFile
 
-class DownloadSectionCourse:
+class DownloadSectionCourse(DownloadFile):
     def __init__(self, url):
         self.url = url
         self.downloads = []
         self.error = []
-
-    def getHtml(self, url):
-        try:
-            page = requests.get(url)
-            return BeautifulSoup(page.content, 'html.parser')
-        except: color.red("Error al obtener la pagina")
-
-    # obtiene los links de los archivos con una expresion regular
-    # que busca los archivos con extensiones especificas
-    
-    def getFileLink(self, soup):
-        try:
-            regexFiles = "([^\\s]+(\\.(?i)(mp4|pdf|html|zip|txt|url))$)"
-            return soup.find_all(href=re.compile(regexFiles))
-        except: color.red("Error al obtener los links")
 
     def saveFile(self, fullPathSave): 
         try: 
@@ -31,7 +14,6 @@ class DownloadSectionCourse:
             links = self.getFileLink(soup)
 
             if links:
-
                 for link in links:
                     fullLink = f"{self.url}{link.get('href')}"
                     if not os.path.isfile(f"{fullPathSave}/{link.text}"): 
@@ -40,9 +22,10 @@ class DownloadSectionCourse:
                             color.orange(f"Obteniendo: {link.text}")
 
                             # Se empieza el proceso de descarga y se comprueba el estado de la respuesta
-                            dowlnloadF = downloadFile(fullPathSave, link, fullLink)
+                            # Si todo esta bien respode con verdadero y sino con falso
+                            dowlnloadF = self.downloadFile(fullPathSave, link, fullLink)
                             
-                            if dowlnloadF ==  200:
+                            if dowlnloadF:
                                 color.green(f"El archivo {link.text} se descargo")
                                 self.downloads.append({
                                     "title": link.text
@@ -62,10 +45,11 @@ class DownloadSectionCourse:
                                 os.remove(f"{fullPathSave}/{link.text}")
                             break
                     else: color.orange(f"Ya se descargo {link.text}")
+            else: color.red("No se encontraron archivos para descargar")
         except:
             color.red("Error al obtener los links")
 
-class DownloadAllCourse(DownloadSectionCourse):
+class DownloadAllCourse(DownloadFile):
     def __init__(self, url):
         self.url = url
 
@@ -89,7 +73,7 @@ class DownloadAllCourse(DownloadSectionCourse):
             return folders
         except: color.red("Error al obtener las carpetas del curso")
 
-    def saveAllFiles(self, fullPathSave):
+    def saveAllFiles(self, fullPathSave: str):
         folders = self.getFolders
 
         # Descarga por cada carpeta del curso
@@ -97,15 +81,16 @@ class DownloadAllCourse(DownloadSectionCourse):
             soupFolderPage = self.getHtml(folder["url"])
             links = self.getFileLink(soupFolderPage)
 
-            print("=====================================================")
-            color.green(f"Obteniendo archivos de la carpeta: {folder['title']}")
-            print("=====================================================")
+            for line in range(len(folder["title"]) + 40): print(color.ORANGE + "=", end="")
+            print(f"\n{color.ORANGE}[¡] Obteniendo archivos de la carpeta: {color.GREEN} {folder['title']}")
+            for line in range(len(folder["title"]) + 40): print(color.ORANGE + "=", end="")
+            print("\n")
 
             if links:
                 for link in links:
                     fullLink = f"{folder['url']}{link.get('href')}"
                     print(fullLink)
             
-            print("=====================================================")
+            print("\n")
 
                     

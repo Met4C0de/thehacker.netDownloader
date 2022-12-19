@@ -1,8 +1,8 @@
 import os
 import argparse 
 
-from utils.soutils import clear, color, createDirectories, createLog, createPathLog, logo
-from utils.DownloadFiles import DownloadSectionCourse, DownloadAllCourse
+from utils.soutils import color, createDirectories, createLog, createPathLog, logo
+from utils.DownloadCourses import DownloadSectionCourse, DownloadAllCourse
 
 parser = argparse.ArgumentParser(
     description='Script para descargar cursos de elhacker.net'
@@ -31,10 +31,9 @@ parser.add_argument('-pl', '--pathlog',
                     required=False,
                     help='Ruta donde se guardara el log')
 parser.add_argument('-full', '--full-course',
-                    type=bool,
-                    default=False,
-                    required=False,
-                    help='Descarga el curso completo')
+                    action='store_true',
+                    help='Descargar el curso completo')
+
 
 args = parser.parse_args()
 
