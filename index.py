@@ -38,39 +38,36 @@ parser.add_argument('-full', '--full-course',
 args = parser.parse_args()
 
 if __name__ == "__main__":
-    try:
-        logo()
-        print(f'\n\033[?25l{color.ORANGE}', end="") # oculta el cursor
+    
+    logo()
+    print(f'\n\033[?25l{color.ORANGE}', end="") # oculta el cursor
 
-        pathSaved = args.folder_save
-        pathLog = createPathLog(args.pathlog) 
-        
-        if os.path.isdir(pathSaved):
+    pathSaved = args.folder_save
+    
+    if os.path.isdir(pathSaved):
+        if not args.full_course:
+            pathLog = createPathLog(args.pathlog) 
             downSectionC  = DownloadSectionCourse(args.url)
+            
+            if args.author and not args.section:
+                createDirectories(f"{pathSaved}/{args.author}")
+                downSectionC.saveFile(f"{pathSaved}/{args.author}", pathLog)
+
+            elif args.author and args.section:
+                createDirectories(f"{pathSaved}/{args.author}/{args.section}")
+                downSectionC.saveFile(f"{pathSaved}/{args.author}/{args.section}", pathLog)
+            else:
+                createDirectories(pathSaved)
+                downSectionC.saveFile(pathSaved, pathLog)
+
+            createLog(downSectionC.downloads, downSectionC.error, pathLog, "generic")
+
+        else:
             downSectionFullC = DownloadAllCourse(args.url)
 
-            if not args.full_course:
-                if args.author and not args.section:
-                    createDirectories(f"{pathSaved}/{args.author}")
-                    downSectionC.saveFile(f"{pathSaved}/{args.author}")
-
-                elif args.author and args.section:
-                    createDirectories(f"{pathSaved}/{args.author}/{args.section}")
-                    downSectionC.saveFile(f"{pathSaved}/{args.author}/{args.section}")
-                else:
-                    createDirectories(pathSaved)
-                    downSectionC.saveFile(pathSaved)
-                createLog(downSectionC.downloads, downSectionC.error, pathLog)
-            else:
-                if args.author and not args.section:
-                    createDirectories(f"{pathSaved}/{args.author}")
-                    downSectionFullC.saveAllFiles(f"{pathSaved}/{args.author}")
-                # crear un log personalisado para el curso completo
-                
-        else: color.orange("No es una ruta valida para almacenar el curso")
-
-    except KeyboardInterrupt: 
-        color.red("Saliendo...")
-        createLog(downSectionC.downloads, downSectionC.error, pathLog)
-    finally:
-        print(f'\n\033[?25h', end="") # muestra el cursor
+            if args.author:
+                createDirectories(f"{pathSaved}/{args.author}")
+                downSectionFullC.saveAllFiles(f"{pathSaved}/{args.author}")
+            
+    else: color.orange("No es una ruta valida para almacenar el curso")
+    print(f'\n\033[?25h', end="") # muestra el cursor

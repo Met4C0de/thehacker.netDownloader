@@ -1,6 +1,6 @@
 import os
-import requests
 from tqdm import tqdm
+import re
 
 def logo():
     clear()
@@ -49,34 +49,36 @@ def createPathLog(pathLog: str):
         return "files.log"
     
 
-def createLog(dwf:list, errf: list, pathLog:str = ""):
-    clear()
-    logo()
-    print("\n")
+def createLog(dwf:list, errf: list, pathLog:str = "", typeLog="generic"):
     try:
         if len(dwf) > 0 or len(errf) > 0:
             file = open(pathLog, "a")
 
             if len(dwf) > 0:
-                print(f"\n{color.GREEN} Archivos descargados {color.RESET}\n")
                 file.write("Archivos descargados\n")
                 for f in dwf:
-                    color.green(f"Nombre: {f['title']}")
+                    if typeLog == "full":
+                        file.write(f"Carpeta: {f['folderName']}\n")
+                        file.write(f"Ruta: {f['pathFolder']}\n")
                     file.write(f"Nombre: {f['title']}\n")
-            
+                    file.write(f"Hora: {f['hour']}\n")
+                    file.write(f"Fecha: {f['date']}\n")
+
+
             if len(errf) > 0:
-                color.red("Archivos no descargados")
                 file.write("\nArchivos no descargados\n")
 
                 for f in errf:
-                    color.red(f"Nombre: { f['title'] }")
+                    if typeLog == "full":
+                        file.write(f"Carpeta: {f['folderName']}\n")
+                        file.write(f"Ruta: {f['pathFolder']}\n")
                     file.write(f"Nombre: { f['title'] }\n")
+                    file.write(f"Hora: { f['hour'] }\n")
+                    file.write(f"Fecha: { f['date'] }\n")
             file.close()
     except PermissionError: 
         color.red("No tienes permisos para crear un log en esta ruta, intenta con sudo")
-    except: 
-        color.red("Error al generar el log")
-
+    except: color.red("No se pudo crear el log")
 class color:
     RED = '\033[31m'
     GREEN = '\033[32m'

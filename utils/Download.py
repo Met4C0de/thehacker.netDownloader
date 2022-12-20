@@ -6,9 +6,10 @@ from utils.soutils import color
 from bs4 import BeautifulSoup
 
 class DownloadFile: 
+    REGEX_FILES = "([^\\s]+(\\.(?i)(mp4|pdf|html|zip|txt|url))$)"
 
-    @staticmethod
-    def downloadFile(fullPathSave:str, link:str, fullLink:str):
+    @classmethod
+    def downloadFile(cls, fullPathSave:str, link:str, fullLink:str):
         response = requests.get(fullLink, stream=True)
         print(color.ORANGE)
         
@@ -32,8 +33,8 @@ class DownloadFile:
             color.green(f"El archivo {link.text} se descargo")
             return True
 
-    @staticmethod
-    def getHtml(url):
+    @classmethod
+    def getHtml(cls, url):
         try:
             page = requests.get(url)
             return BeautifulSoup(page.content, 'html.parser')
@@ -42,10 +43,9 @@ class DownloadFile:
     # obtiene los links de los archivos con una expresion regular
     # que busca los archivos con extensiones especificas
     
-    @staticmethod
-    def getFileLink(soup):
+    @classmethod
+    def getFileLink(cls, soup):
         try:
-            regexFiles = "([^\\s]+(\\.(?i)(mp4|pdf|html|zip|txt|url))$)"
-            return soup.find_all(href=re.compile(regexFiles))
+            return soup.find_all(href=re.compile(cls.REGEX_FILES))
         except: color.red("Error al obtener los links")
     
