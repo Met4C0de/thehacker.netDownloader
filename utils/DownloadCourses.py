@@ -95,6 +95,7 @@ class DownloadAllCourse(DownloadFile):
         if folders and len(folders) > 0:
 
             for folder in folders:
+                fullPathSaveFolder = f"{fullPathSave}/{folder['title']}"
                 try:
                     # Se obtiene el html de la carpeta
                     soupFolderPage = self.getHtml(folder["url"])
@@ -109,7 +110,6 @@ class DownloadAllCourse(DownloadFile):
 
                     if links:
                         # Se crea una carpeta con el nombre de la seccion del curso
-                        fullPathSaveFolder = f"{fullPathSave}/{folder['title']}"
                         createDirectories(fullPathSaveFolder)
 
                         for link in links:
@@ -123,7 +123,7 @@ class DownloadAllCourse(DownloadFile):
                                     dowlnloadF = self.downloadFile(fullPathSaveFolder, link, fullLink)
                                     
                                     if dowlnloadF:
-                                        color.green(f"El archivo {link.text} se descargo")
+                                        color.green(f"\nEl archivo {link.text} se descargo\n")
                                         self.downloads.append({
                                             "folderName": folder["title"],
                                             "pathFolder": fullPathSaveFolder,
@@ -165,10 +165,13 @@ class DownloadAllCourse(DownloadFile):
                     Crea un log con los archivos descargados y los que no se pudieron descargar
                     Cada que se descargue una carpeta completa
                 """
+                # remove end / if exist
+                nameLog = folder['title'].replace("/", "") if "/" in folder['title'] else folder['title'] 
+                folder['title']
                 createLog(
                     self.downloads,
                     self.error,
-                    f"{fullPathSaveFolder}/{folder['title']}/{folder['title']}.log",
+                    f"{fullPathSaveFolder}/{nameLog}.log",
                     "full"
                 )
         else: color.red("No se encontraron carpetas para descargar")

@@ -78,7 +78,8 @@ def createLog(dwf:list, errf: list, pathLog:str = "", typeLog="generic"):
             file.close()
     except PermissionError: 
         color.red("No tienes permisos para crear un log en esta ruta, intenta con sudo")
-    except: color.red("No se pudo crear el log")
+    except:
+        color.red("No se pudo crear el log")
 class color:
     RED = '\033[31m'
     GREEN = '\033[32m'

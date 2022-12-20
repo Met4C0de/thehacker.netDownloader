@@ -22,16 +22,14 @@ class DownloadFile:
                 for data in response.iter_content(block_size):
                     progress_bar.update(len(data))
                     file.write(data)
-            progress_bar.close() 
+            progress_bar.close()
         
         if os.path.isfile(f"{fullPathSave}/{link.text}"):
             if total_size_in_bytes != os.path.getsize(f"{fullPathSave}/{link.text}"):
                 color.red("Error al descargar el archivo")
                 os.remove(f"{fullPathSave}/{link.text}")
                 return False
-        else:
-            color.green(f"El archivo {link.text} se descargo")
-            return True
+            else: return True
 
     @classmethod
     def getHtml(cls, url):
