@@ -3,7 +3,7 @@ import time
 
 def logo():
     clear()
-    logo = open("./logo.txt", "r")
+    logo = open("./logo.txt", "r", encoding="utf8")
     print(color.BLUE + logo.read())
     logo.close()
 
