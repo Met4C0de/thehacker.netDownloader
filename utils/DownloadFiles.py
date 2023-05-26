@@ -21,9 +21,8 @@ class DownloadFile:
     def saveFile(self, fullPathSave): 
         try: 
             soup = self.getHtml
-            regexFiles = "([^\\s]+(\\.(?i)(mp4|pdf|html|zip))$)"
-            links = soup.find_all(href=re.compile(regexFiles))
-
+            regexFiles = r"[^\s]+\.(mp4|pdf|html|zip)$"
+            links = soup.find_all(href=re.compile(regexFiles, re.IGNORECASE))
             if links:
 
                 for link in links:
@@ -63,5 +62,6 @@ class DownloadFile:
                                 os.remove(f"{fullPathSave}/{link.text}")
                             break
                     else: color.orange(f"Ya se descargo {link.text}")
-        except:
+        except e:
+            print(e)
             color.red("Error al obtener los links")
